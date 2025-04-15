@@ -27,6 +27,28 @@ int OnInit()
 }
 
 //+------------------------------------------------------------------+
+//| Custom indicator deinitialization function                       |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Töröljük az összes objektumot, amit az indikátor létrehozott
+    DeleteAllObjects();
+}
+
+//+------------------------------------------------------------------+
+//| Delete all indicator objects                                     |
+//+------------------------------------------------------------------+
+void DeleteAllObjects()
+{
+    // Töröljük az összes vonalat
+    for (int i = 0; i <= HistoryDays; i++)
+    {
+        ObjectDelete("PrevDayHigh_" + IntegerToString(i));
+        ObjectDelete("PrevDayLow_" + IntegerToString(i));
+    }
+}
+
+//+------------------------------------------------------------------+
 //| Custom indicator iteration function                              |
 //+------------------------------------------------------------------+
 int start()
@@ -37,16 +59,11 @@ int start()
     //--- Only update if new day or first run
     if (prevDay != today)
     {
-        int i;
         //--- Delete all previous lines
-        for (i = 0; i <= HistoryDays; i++)
-        {
-            ObjectDelete("PrevDayHigh_" + IntegerToString(i));
-            ObjectDelete("PrevDayLow_" + IntegerToString(i));
-        }
+        DeleteAllObjects();
         
         //--- Draw lines for today and historical days
-        for (i = 0; i <= HistoryDays; i++)
+        for (int i = 0; i <= HistoryDays; i++)
         {
             //--- Get high and low for this day
             double dayHigh = iHigh(NULL, PERIOD_D1, i+1);
